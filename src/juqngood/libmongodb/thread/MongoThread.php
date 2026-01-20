@@ -8,6 +8,7 @@ use juqngood\libmongodb\query\MongoQuery;
 use MongoDB\Client;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperHandlerEntry;
+use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\thread\Thread;
 
 final class MongoThread extends Thread {
@@ -19,14 +20,18 @@ final class MongoThread extends Thread {
 
 	protected bool $running = false;
 
-	protected Client $connection;
+	protected static Client $connection;
+
+	private NonThreadSafeValue $config;
 
 	public function __construct(
 		protected readonly string $uri,
-		protected readonly array $config
+		array $config
 	) {
 		$this->queries = new ThreadSafeArray();
 		$this->completeQueries = new ThreadSafeArray();
+
+		$this->config = new NonThreadSafeValue($config);
 	}
 
 	/**
@@ -44,13 +49,13 @@ final class MongoThread extends Thread {
 	}
 
 	public function getConnection() : Client {
-		return $this->connection;
+		return self::$connection;
 	}
 
 	protected function createConnection() : void {
-		$this->connection = new Client(
+		self::$connection = new Client(
 			$this->uri,
-			$this->config
+			$this->config->deserialize()
 		);
 	}
 
