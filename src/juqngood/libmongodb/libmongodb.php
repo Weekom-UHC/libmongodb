@@ -20,10 +20,10 @@ final class libmongodb {
 	/** @var array<int, MongoThread> */
 	protected array $threads = [];
 
-	public function __construct(protected readonly PluginBase $base, string $uri, array $config) {
+	public function __construct(protected readonly PluginBase $base, string $uri, int $workers, array $config) {
 		self::setInstance($this);
 
-		for ($i = 0; $i < $config['threads'] ?? 2; $i++) {
+		for ($i = 0; $i < $workers; $i++) {
 			$thread = new MongoThread($uri, $config);
 
 			$notifier = $base->getServer()->getTickSleeper()->addNotifier(function () use ($thread) : void {
