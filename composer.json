@@ -10,9 +10,18 @@
     }
   ],
   "require-dev": {
-    "pocketmine/pocketmine-mp": ">=5.39.2"
+    "pocketmine/pocketmine-mp": ">=5.39.2",
+    "sof3/await-generator": "3.6.1",
+    "ext-pmmpthread": "*",
+    "ext-igbinary": "*"
   },
   "require": {
     "mongodb/mongodb": ">=2.1.2"
+  },
+  "extra": {
+    "virion": {
+      "spec": "3.0",
+      "namespace-root": "juqngood\\libmongodb"
+    }
   }
 }
