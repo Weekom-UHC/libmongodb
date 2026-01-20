@@ -27,8 +27,6 @@ final class MongoThread extends Thread {
 	) {
 		$this->queries = new ThreadSafeArray();
 		$this->completeQueries = new ThreadSafeArray();
-
-		$this->createConnection();
 	}
 
 	/**
