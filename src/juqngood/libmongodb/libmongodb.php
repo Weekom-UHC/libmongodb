@@ -7,6 +7,7 @@ namespace juqngood\libmongodb;
 use juqngood\libmongodb\exception\MongoException;
 use juqngood\libmongodb\query\MongoQuery;
 use juqngood\libmongodb\thread\MongoThread;
+use juqngood\libmongodb\thread\MongoWatchThread;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use SOFe\AwaitGenerator\Await;
@@ -43,6 +44,37 @@ final class libmongodb {
 
 			$this->threads[] = $thread;
 		}
+	}
+
+	public static function createWatch(
+		string $uri,
+		string $database,
+		string $collection,
+		array $options,
+		array $piplines
+	) : void {
+		$thread = new MongoWatchThread(
+			$uri,
+			$database,
+			$collection,
+			$options,
+			$piplines
+		);
+
+		$notifier = self::getInstance()->getBase()->getServer()->getTickSleeper()->addNotifier(function () use ($thread) : void {
+			while (($operator = $thread->getOperators()->shift()) !== null) {
+				$data = igbinary_unserialize($operator);
+
+				var_dump($data);
+			}
+		});
+
+		$thread->setNotifier($notifier);
+		$thread->start();
+	}
+
+	public function getBase() : PluginBase {
+		return $this->base;
 	}
 
 	public function submit(MongoQuery $query, ?\Closure $success = null, ?\Closure $failure = null) : void {
