@@ -65,13 +65,10 @@ final class libmongodb {
 		$start = microtime(true);
 
 		while (count($this->completionHandlers) > 0) {
-			$handled = false;
-
 			foreach ($this->threads as $thread) {
 				/** @var MongoQuery|null $query */
 				while (($query = $thread->getCompleteQueries()->shift()) !== null) {
 					$this->handleCompletedQuery($query);
-					$handled = true;
 				}
 			}
 
@@ -85,9 +82,7 @@ final class libmongodb {
 				break;
 			}
 
-			if (!$handled) {
-				usleep(10000);
-			}
+			usleep(1000);
 		}
 	}
 
